@@ -12,7 +12,7 @@ IN = "IN"
 NOT = "NOT"
 SEP = ";"
 EOF = "EOF"
-ZORE = "Z"
+ZERO = "Z"
 SPACE = " "
 # age:3
 class Term:
@@ -72,7 +72,7 @@ def parseConjunction(con):
     return conjunction
     
 # age IN 3;4 AND state NOT NY OR state IN CA AND gender IN M 
-def buildTwoLInvertedIndex(doc_dnf,doc_id,con_doc_inverted_index,con_id_map,ass_con_inverted_index):
+def buildTwoLevelInvertedIndex(doc_dnf,doc_id,con_doc_inverted_index,con_id_map,ass_con_inverted_index):
     doc_dnf = re.sub('\s+',' ',doc_dnf)
     print doc_id,":",doc_dnf
     if 0 == len(doc_dnf): 
@@ -96,11 +96,11 @@ def buildTwoLInvertedIndex(doc_dnf,doc_id,con_doc_inverted_index,con_id_map,ass_
                 else:
                     ass_con_inverted_index[conjunction.size][a.term.key,a.term.value].append((con_id,a.relation))
                 if 0 == conjunction.size:
-                    if ZORE not in ass_con_inverted_index[conjunction.size]:
-                        ass_con_inverted_index[conjunction.size][ZORE] = [(con_id,IN)]
+                    if ZERO not in ass_con_inverted_index[conjunction.size]:
+                        ass_con_inverted_index[conjunction.size][ZERO] = [(con_id,IN)]
                     else:
-                        if (con_id,IN) not in ass_con_inverted_index[conjunction.size][ZORE]:
-                            ass_con_inverted_index[conjunction.size][ZORE].append((con_id,IN))
+                        if (con_id,IN) not in ass_con_inverted_index[conjunction.size][ZERO]:
+                            ass_con_inverted_index[conjunction.size][ZERO].append((con_id,IN))
         # level one :ConjunctionDoc
         con_doc_inverted_index[con_id_map[con]].append(doc_id)
 
@@ -183,13 +183,13 @@ if __name__ == "__main__":
     con_id = defaultdict(int) 
     ass_con_inverted = defaultdict(dict)  
     
-    buildTwoLInvertedIndex(' age IN 3 AND state IN NY OR state IN CA AND gender IN M','doc1',con_doc_inverted,con_id,ass_con_inverted)    
-    buildTwoLInvertedIndex(' age IN 3 AND gender IN F OR state NOT CA;NY','doc2',con_doc_inverted,con_id,ass_con_inverted)    
-    buildTwoLInvertedIndex(' age IN 3 AND gender IN M AND state NOT CA OR state IN CA AND gender IN F','doc3',con_doc_inverted,con_id,ass_con_inverted)    
-    buildTwoLInvertedIndex(' age IN 3;4  OR state IN CA AND gender IN M','doc4',con_doc_inverted,con_id,ass_con_inverted)    
-    buildTwoLInvertedIndex(' state NOT CA;NY  OR age IN 3;4','doc5',con_doc_inverted,con_id,ass_con_inverted)    
-    buildTwoLInvertedIndex(' state NOT CA;NY  OR age IN 3 AND state IN NY OR state IN CA AND gender IN M','doc6',con_doc_inverted,con_id,ass_con_inverted)    
-    buildTwoLInvertedIndex(' age    IN 3 AND state IN NY OR state IN CA AND gender IN F','doc7',con_doc_inverted,con_id,ass_con_inverted)    
+    buildTwoLevelInvertedIndex(' age IN 3 AND state IN NY OR state IN CA AND gender IN M','doc1',con_doc_inverted,con_id,ass_con_inverted)    
+    buildTwoLevelInvertedIndex(' age IN 3 AND gender IN F OR state NOT CA;NY','doc2',con_doc_inverted,con_id,ass_con_inverted)    
+    buildTwoLevelInvertedIndex(' age IN 3 AND gender IN M AND state NOT CA OR state IN CA AND gender IN F','doc3',con_doc_inverted,con_id,ass_con_inverted)    
+    buildTwoLevelInvertedIndex(' age IN 3;4  OR state IN CA AND gender IN M','doc4',con_doc_inverted,con_id,ass_con_inverted)    
+    buildTwoLevelInvertedIndex(' state NOT CA;NY  OR age IN 3;4','doc5',con_doc_inverted,con_id,ass_con_inverted)    
+    buildTwoLevelInvertedIndex(' state NOT CA;NY  OR age IN 3 AND state IN NY OR state IN CA AND gender IN M','doc6',con_doc_inverted,con_id,ass_con_inverted)    
+    buildTwoLevelInvertedIndex(' age    IN 3 AND state IN NY OR state IN CA AND gender IN F','doc7',con_doc_inverted,con_id,ass_con_inverted)    
     print "\n$$$$$$$$$$$$$$$$$\n"
     print "con_id:",con_id
     print "\n$$$$$$$$$$$$$$$$$\n"
