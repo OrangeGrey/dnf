@@ -126,7 +126,24 @@ class Plist:
         if not skip_flag:
             self.current_idx = EOF
             self.current_entry_id = defaultid
+            
+def sortPlistByCurrentEntries(plists):
+    top_key=[]
+    top_plist=[]
+    tail_plist=[]
+    Plists = sorted(plists,key=lambda x:(x.current_entry_id,x.key[0]))
 
+    for i in xrange(len(Plists)):
+        if Plists[i].key[0] not in top_key:
+            top_key.append(Plists[i].key[0])
+            top_plist.append(Plists[i])
+        else:
+            tail_plist.append(Plists[i])
+       
+    top_plist.extend(tail_plist)
+
+    return top_plist
+    
 def retrievalConjunctions(query,con_id_map,ass_con_inverted_index):
     query = re.sub('\s+',' ',query)
     print "query:",query
@@ -147,12 +164,12 @@ def retrievalConjunctions(query,con_id_map,ass_con_inverted_index):
                 value = ass_con_inverted_index[K][key]                   
                 plist = Plist(key,value) 
                 Plists.append(plist)
-        Plists = sorted(Plists,key=lambda x:x.current_entry_id)
+        Plists = sortPlistByCurrentEntries(Plists)
         if K == 0: K=1
         if len(Plists) < K: continue
 
         while Plists[K-1].current_idx != EOF:
-            Plists = sorted(Plists,key=lambda x:x.current_entry_id)
+            Plists = sortPlistByCurrentEntries(Plists)
             if Plists[0].current_entry_id == Plists[K-1].current_entry_id:          
                 if Plists[0].current_entry_relation == NOT or Plists[K-1].current_entry_relation == NOT:
                     RejectId = Plists[0].current_entry_id
